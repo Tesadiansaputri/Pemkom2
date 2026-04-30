@@ -10,4 +10,13 @@
         <maven.compiler.release>25</maven.compiler.release>
         <exec.mainClass>com.mycompany.ftfbank.FTFBank</exec.mainClass>
     </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <version>4.11.1</version>
+        </dependency>
+    </dependencies>
+
 </project>

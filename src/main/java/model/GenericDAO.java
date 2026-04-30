@@ -4,10 +4,25 @@
  */
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
 /**
  *
  * @author ADVAN
  */
-public class GenericDAO {
-    
+public class GenericDAO<T> {  // 🔥 WAJIB ADA <T>
+
+    private List<T> dataList;
+
+    public GenericDAO() {
+        dataList = new ArrayList<>();
+    }
+
+    public void add(T data) {
+        dataList.add(data);
+    }
+
+    public List<T> getAll() {
+        return dataList;
+    }
 }
