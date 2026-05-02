@@ -4,11 +4,12 @@
 
 package com.mycompany.ftfbank;
 
-import java.time.LocalDateTime;
-import model.GenericDAO;
-import model.Karyawan;
-import model.LogAbsensi;
-import model.MongoManager;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
+
 
 
 
@@ -22,41 +23,27 @@ public class FTFBank {
 
      public static void main(String[] args) {
 
-         MongoManager.connect();
-        // DAO
-        GenericDAO<Karyawan> karyawanDAO = new GenericDAO<>();
-        GenericDAO<LogAbsensi> absensiDAO = new GenericDAO<>();
+           String uri = "mongodb://localhost:27017";
 
-        // Data karyawan
-        Karyawan k1 = new Karyawan("RFID123", "K001", "Budi", "IT");
-        Karyawan k2 = new Karyawan("RFID456", "K002", "Siti", "HR");
+        try (MongoClient mongoClient = MongoClients.create(uri)) {
+            
+            MongoDatabase database = mongoClient.getDatabase("bank_absensi");
+            
+            System.out.println("Koneksi ke MongoDB BERHASIL!");
+            System.out.println("Database: " + database.getName());
+            
+            MongoCollection<Document> collection = database.getCollection("Karyawan");
 
-        karyawanDAO.add(k1);
-        karyawanDAO.add(k2);
+            Document doc = new Document("_id", 1)
+                    .append("nama", "Budi")
+                    .append("jabatan", "Admin");
 
-        // Simulasi scan RFID
-        String scanRFID = "RFID123";
+            collection.insertOne(doc);
 
-        for (Karyawan k : karyawanDAO.getAll()) {
-            if (k.getUidRfid().equals(scanRFID)) {
+            System.out.println("Data berhasil ditambahkan!");
 
-                LogAbsensi log = new LogAbsensi(
-                        "LOG1",
-                        k.getUidRfid(),
-                        LocalDateTime.now(),
-                        "Hadir"
-                );
-
-                absensiDAO.add(log);
-
-                System.out.println("✅ Absensi berhasil: " + k.getNamaLengkap());
-            }
-        }
-
-        // tampilkan log
-        System.out.println("\nData Absensi:");
-        for (LogAbsensi log : absensiDAO.getAll()) {
-            System.out.println(log);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
