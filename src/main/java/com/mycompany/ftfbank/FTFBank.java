@@ -34,8 +34,7 @@ public class FTFBank {
             
             MongoCollection<Document> collection = database.getCollection("Karyawan");
 
-            Document doc = new Document("_id", 1)
-                    .append("nama", "Budi")
+            Document doc = new Document("nama", "Budi")
                     .append("jabatan", "Admin");
 
             collection.insertOne(doc);
