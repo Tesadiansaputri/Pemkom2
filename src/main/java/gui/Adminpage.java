@@ -4,131 +4,29 @@
  */
 package gui;
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import java.awt.Dimension;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import model.Karyawan;
-import model.MongoManager;
-import org.bson.Document;
 
+import model.Karyawan;
+import services.KaryawanService;
 /**
  *
  * @author ADVAN
  */
 public class Adminpage extends javax.swing.JFrame {
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Adminpage.class.getName());
-    private javax.swing.JPanel panelCard;
-    private String selectedId = null;
-
+    private static final java.util.logging.Logger logger =
+        java.util.logging.Logger.getLogger(Adminpage.class.getName());
+    
     /**
      * Creates new form Adminpage
      */
     public Adminpage() {
         initComponents();
-        jTextField4.addActionListener(e -> jButton4ActionPerformed(null));
-        panelCard = new JPanel();
-        panelCard.setLayout(new java.awt.GridLayout(0, 3, 10, 10));
-        panelCard.setBackground(new java.awt.Color(89, 109, 135));
-
-        jScrollPane1.setViewportView(panelCard);
-
-        loadData();
+        
+        showData(""); //tampilkan seluruh data karyawan    
+        
     }
-
-    private JPanel createCard(String nama, String id, String jabatan) {
-    JPanel card = new JPanel();
-    card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-    card.setAlignmentY(TOP_ALIGNMENT);
-    card.setBackground(new java.awt.Color(230, 126, 34));
-    card.setPreferredSize(new Dimension(180, 50));
-    card.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createLineBorder(java.awt.Color.BLUE, 1),
-            javax.swing.BorderFactory.createEmptyBorder(2, 5, 2, 5)
-    ));
-    card.setMaximumSize(new Dimension(180, 50));
-
-    JLabel lNama = new JLabel("Nama: " + nama);
-    JLabel lId = new JLabel("ID: " + id);
-    JLabel lJabatan = new JLabel("Jabatan: " + jabatan);
-
-    JButton edit = new JButton("Edit");
-    edit.addActionListener(e -> {
-        selectedId = id;
-
-        jTextField1.setText(id);
-        jTextField3.setText(nama);
-        jComboBox1.setSelectedItem(jabatan);
-    });
-
-    JButton delete = new JButton("Delete");
-    delete.addActionListener(e -> {
-        int confirm = javax.swing.JOptionPane.showConfirmDialog(
-                null,
-                "Yakin mau hapus data ini?",
-                "Konfirmasi",
-                javax.swing.JOptionPane.YES_NO_OPTION
-        );
-
-        if (confirm == javax.swing.JOptionPane.YES_OPTION) {
-            try {
-                MongoDatabase db = MongoManager.getDatabase();
-                MongoCollection<Document> collection = db.getCollection("Karyawan");
-
-                collection.deleteOne(new Document("_id", id));
-
-                javax.swing.JOptionPane.showMessageDialog(null, "Data berhasil dihapus!");
-
-                loadData(); // refresh UI
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                javax.swing.JOptionPane.showMessageDialog(null, "Gagal hapus data!");
-            }
-        }
-    });
-
-    JPanel btn = new JPanel();
-    btn.add(edit);
-    btn.add(delete);
-
-    // 🔥 INI YANG KAMU KURANGIN TADI
-    card.add(lNama);
-    card.add(lId);
-    card.add(lJabatan);
-    card.add(btn);
-
-    return card; // 🔥 WAJIB ADA
-}
-
-    private void loadData() {
-        panelCard.removeAll();
-
-        try {
-            MongoDatabase db = MongoManager.getDatabase();
-            MongoCollection<Document> collection = db.getCollection("Karyawan");
-
-            for (Document doc : collection.find()) {
-                System.out.println(doc.toJson());
-                String id = String.valueOf(doc.get("_id"));
-                String nama = doc.getString("nama");
-                String jabatan = doc.getString("jabatan");
-
-                panelCard.add(createCard(nama, id, jabatan));
-            }
-
-            panelCard.revalidate();
-            panelCard.repaint();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -142,17 +40,19 @@ public class Adminpage extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel2 = new javax.swing.JPanel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        txtUID = new javax.swing.JTextField();
+        txtKRName = new javax.swing.JTextField();
+        txtKRDept = new javax.swing.JComboBox<>();
+        btnSave = new javax.swing.JButton();
+        btnUpdate = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jTextField4 = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jButton4 = new javax.swing.JButton();
+        txtCari = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        txtKRID = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -173,30 +73,33 @@ public class Adminpage extends javax.swing.JFrame {
 
         jScrollPane1.setViewportView(jPanel2);
 
-        jTextField3.addActionListener(this::jTextField3ActionPerformed);
+        txtUID.addActionListener(this::txtUIDActionPerformed);
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Admin", "Customer Service", "Security", "Teller", "Account Officer", "Analisis Kredit", "Back Office" }));
-        jComboBox1.addActionListener(this::jComboBox1ActionPerformed);
+        txtKRName.addActionListener(this::txtKRNameActionPerformed);
 
-        jButton1.setText("Save");
-        jButton1.addActionListener(this::jButton1ActionPerformed);
+        txtKRDept.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Admin", "Customer Service", "Security", "Teller", "Account Officer", "Analisis Kredit", "Back Office" }));
 
-        jButton2.setText("Update");
-        jButton2.addActionListener(this::jButton2ActionPerformed);
+        btnSave.setText("Save");
+        btnSave.addActionListener(this::btnSaveActionPerformed);
+
+        btnUpdate.setText("Update");
+        btnUpdate.addActionListener(this::btnUpdateActionPerformed);
 
         jButton3.setText("Refresh");
         jButton3.addActionListener(this::jButton3ActionPerformed);
 
         jTextField4.addActionListener(this::jTextField4ActionPerformed);
 
-        jLabel1.setText("ID");
+        jLabel1.setText("UID");
 
         jLabel3.setText("Nama Karyawan");
 
         jLabel4.setText("Departemen");
 
-        jButton4.setText("🔍︎");
-        jButton4.addActionListener(this::jButton4ActionPerformed);
+        txtCari.setText("🔍︎");
+        txtCari.addActionListener(this::txtCariActionPerformed);
+
+        jLabel2.setText("ID Karyawan");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -207,28 +110,34 @@ public class Adminpage extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(30, 30, 30)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel1))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addGap(54, 54, 54)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtKRID)
+                            .addComponent(txtUID, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel4)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jLabel3))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel4)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtKRDept, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtKRName, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(31, 31, 31)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jButton1)
+                                .addComponent(btnSave)
                                 .addGap(18, 18, 18)
-                                .addComponent(jButton2))
+                                .addComponent(btnUpdate))
                             .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(30, 30, 30)
                         .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtCari, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -238,22 +147,32 @@ public class Adminpage extends javax.swing.JFrame {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel4)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(15, 15, 15)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(txtUID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel1)
+                                .addComponent(btnSave)
+                                .addComponent(btnUpdate)
+                                .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtCari)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton3)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel2)
+                            .addComponent(txtKRID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtKRName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtKRDept, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(27, 27, 27)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -278,142 +197,47 @@ public class Adminpage extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void txtKRNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtKRNameActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_txtKRNameActionPerformed
 
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox1ActionPerformed
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        Karyawan K = new Karyawan();
+        K.setUidRfid(txtUID.getText());
+        K.setIdKaryawan(txtKRID.getText()); 
+        K.setNamaLengkap(txtKRName.getText());
+        K.setDepartemen(txtKRDept.getSelectedItem().toString()); 
+        KaryawanService service = new KaryawanService();
+        service.tambahKaryawan(K);
+        showData("");
+    }//GEN-LAST:event_btnSaveActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        try {
-            MongoDatabase db = MongoManager.getDatabase();
-            MongoCollection<Document> collection = db.getCollection("Karyawan");
-
-            // 🔥 ambil data dari form
-            String id = jTextField1.getText();
-            String nama = jTextField3.getText();
-            String jabatan = jComboBox1.getSelectedItem().toString();
-
-            // 🔥 validasi biar ga kosong
-            if (id.isEmpty() || nama.isEmpty()) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Data tidak boleh kosong!");
-                return;
-            }
-
-            // 🔥 buat document
-            Document doc = new Document("_id", id)
-                    .append("nama", nama)
-                    .append("jabatan", jabatan);
-
-            // 🔥 simpan ke MongoDB
-            collection.insertOne(doc);
-
-            javax.swing.JOptionPane.showMessageDialog(this, "Data berhasil disimpan!");
-
-            // 🔥 refresh tampilan card
-            loadData();
-
-            // 🔥 clear input biar enak
-            jTextField1.setText("");
-            jTextField3.setText("");
-            jComboBox1.setSelectedIndex(0);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            javax.swing.JOptionPane.showMessageDialog(this, "Gagal simpan data!");
-        }
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        try {
-        if (selectedId == null) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Pilih data dulu!");
-            return;
-        }
-
-        MongoDatabase db = MongoManager.getDatabase();
-        MongoCollection<Document> collection = db.getCollection("Karyawan");
-
-        // 🔥 ambil data dari form
-        String nama = jTextField3.getText();
-        String jabatan = jComboBox1.getSelectedItem().toString();
-
-        // 🔥 filter berdasarkan _id (String)
-        Document filter = new Document("_id", selectedId);
-
-        // 🔥 data yang diupdate
-        Document update = new Document("$set",
-                new Document("nama", nama)
-                        .append("jabatan", jabatan)
-        );
-
-        collection.updateOne(filter, update);
-
-        javax.swing.JOptionPane.showMessageDialog(this, "Data berhasil diupdate!");
-
-        loadData(); // refresh card
-
-        // reset
-        selectedId = null;
-        jTextField1.setText("");
-        jTextField3.setText("");
-        jComboBox1.setSelectedIndex(0);
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        javax.swing.JOptionPane.showMessageDialog(this, "Gagal update data!");
-    }
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        Karyawan K = new Karyawan();
+        K.setUidRfid(txtUID.getText());
+        K.setIdKaryawan(txtKRID.getText()); 
+        K.setNamaLengkap(txtKRName.getText());
+        K.setDepartemen(txtKRDept.getSelectedItem().toString()); 
+        KaryawanService service = new KaryawanService();
+        service.updateKaryawan(K);
+        refresAll();
+    }//GEN-LAST:event_btnUpdateActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        loadData(); // 🔥 reload data dari MongoDB
-
-    javax.swing.JOptionPane.showMessageDialog(this, "Data berhasil direfresh!");  
+        refresAll();
     }//GEN-LAST:event_jButton3ActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        String keyword = jTextField4.getText();
-
-    if (keyword.isEmpty()) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Masukkan kata kunci dulu!");
-        return;
-    }
-
-    panelCard.removeAll();
-
-    try {
-        MongoDatabase db = MongoManager.getDatabase();
-        MongoCollection<Document> collection = db.getCollection("Karyawan");
-
-        // 🔥 search: nama / jabatan / id
-        Document query = new Document("$or", java.util.Arrays.asList(
-                new Document("nama", new Document("$regex", keyword).append("$options", "i")),
-                new Document("jabatan", new Document("$regex", keyword).append("$options", "i")),
-                new Document("_id", keyword)
-        ));
-
-        for (Document doc : collection.find(query)) {
-            String id = String.valueOf(doc.get("_id"));
-            String nama = doc.getString("nama");
-            String jabatan = doc.getString("jabatan");
-
-            panelCard.add(createCard(nama, id, jabatan));
-        }
-
-        panelCard.revalidate();
-        panelCard.repaint();
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        javax.swing.JOptionPane.showMessageDialog(this, "Gagal mencari data!");
-    }
-    }//GEN-LAST:event_jButton4ActionPerformed
+    private void txtCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCariActionPerformed
+        showData(txtCari.getText());
+    }//GEN-LAST:event_txtCariActionPerformed
 
     private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField4ActionPerformed
+
+    private void txtUIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUIDActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtUIDActionPerformed
 
     /**
      * @param args the command line arguments
@@ -437,23 +261,43 @@ public class Adminpage extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Adminpage().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> {
+            new Adminpage().setVisible(true);
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JComboBox<String> jComboBox1;
+    public static javax.swing.JButton btnSave;
+    public static javax.swing.JButton btnUpdate;
+    public javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
+    private static javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
+    public javax.swing.JTextField jTextField4;
+    public javax.swing.JButton txtCari;
+    public static javax.swing.JComboBox<String> txtKRDept;
+    public static javax.swing.JTextField txtKRID;
+    public static javax.swing.JTextField txtKRName;
+    public static javax.swing.JTextField txtUID;
     // End of variables declaration//GEN-END:variables
+
+    public static void showData(String key) {
+    KaryawanService service = new KaryawanService();
+    service.tampilKaryawan(jPanel2, key);
+}
+
+    private void refresAll() {
+        showData("");
+        txtUID.setText("");
+        txtKRID.setText("");
+        txtKRName.setText("");
+        txtKRDept.setSelectedIndex(0); 
+        btnUpdate.setEnabled(false); 
+        txtUID.requestFocus();
+    }
+    
 }
