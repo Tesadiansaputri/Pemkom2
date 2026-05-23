@@ -34,7 +34,7 @@ public class KaryawanService {
     private final GenericDAO<Karyawan> DAO;
 
     public KaryawanService() {
-        this.DAO = new GenericDAO<>("karyawan", Karyawan.class);
+        this.DAO = new GenericDAO<>("Karyawan", Karyawan.class);
     }
 
     /**
@@ -82,7 +82,8 @@ public class KaryawanService {
             //Mengambil data dari database menggunakan GenericDAO
             //berdasarkan kata kunci yang diketik
             daftarKaryawan = cariKaryawan(key);
-        }
+        } 
+        System.out.println("Jumlah data: " + daftarKaryawan.size());
         // 2. Membersihkan panel target utama sebelum memuat data baru
         panelTarget.removeAll();
 
@@ -132,11 +133,11 @@ public class KaryawanService {
                 tombolEdit.addActionListener((ActionEvent e) -> {
                     Adminpage.txtUID.setText(k.getUidRfid());
                     Adminpage.txtKRID.setText(k.getIdKaryawan());
-                    Adminpage.txtKRID.setEnabled(false); 
+                    Adminpage.txtKRID.setEnabled(false);
                     Adminpage.txtKRName.setText(k.getNamaLengkap());
                     Adminpage.txtKRDept.setSelectedItem(k.getDepartemen());
                     Adminpage.btnUpdate.setEnabled(true);
-                    Adminpage.btnSave.setEnabled(false); 
+                    Adminpage.btnSave.setEnabled(false);
                 });
                 JButton tombolDelete = new JButton("Delete");
                 tombolDelete.setBackground(Color.RED);
@@ -146,7 +147,7 @@ public class KaryawanService {
                     Object[] options = {"Ya, Hapus", "Batal"};
                     int choice = JOptionPane.showOptionDialog(
                             null, // Parent component
-                            "Apakah Anda ingin menyimpan data "+k.getNamaLengkap()+"?", // Message
+                            "Apakah Anda ingin menyimpan data " + k.getNamaLengkap() + "?", // Message
                             "Konfirmasi Pengelolaan", // Title
                             JOptionPane.YES_NO_OPTION, // Option type
                             JOptionPane.QUESTION_MESSAGE, // Message type
@@ -156,8 +157,10 @@ public class KaryawanService {
                     );
 
                     switch (choice) {
-                        case JOptionPane.YES_OPTION -> hapusKaryawan(k.getIdKaryawan());
-                        case JOptionPane.NO_OPTION -> System.out.println("User memilih: Batal");
+                        case JOptionPane.YES_OPTION ->
+                            hapusKaryawan(k.getIdKaryawan());
+                        case JOptionPane.NO_OPTION ->
+                            System.out.println("User memilih: Batal");
                         default -> {
                         }
                     }
@@ -183,6 +186,7 @@ public class KaryawanService {
             panelTarget.revalidate();
             panelTarget.repaint();
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
