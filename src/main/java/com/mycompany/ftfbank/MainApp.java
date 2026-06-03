@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package pemkom2;
+package com.mycompany.ftfbank;
 import gui.Adminpage;
 import services.SerialService;
 import java.awt.Frame;

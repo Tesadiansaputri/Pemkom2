@@ -34,7 +34,7 @@ public class KaryawanService {
     private final GenericDAO<Karyawan> DAO;
 
     public KaryawanService() {
-        this.DAO = new GenericDAO<>("karyawan", Karyawan.class);
+        this.DAO = new GenericDAO<>("Karyawan", Karyawan.class);
     }
 
     /**

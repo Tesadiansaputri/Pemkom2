@@ -18,26 +18,30 @@ import org.bson.codecs.pojo.PojoCodecProvider;
  */
 public class MongoManager {
     private static MongoClient mongoClient;
+    private static MongoDatabase database;
     private static final String DATABASE_NAME = "bank_absensi";
 
     public static MongoDatabase getDatabase() {
         if (mongoClient == null) {
-            // Konfigurasi CodecRegistry untuk pemetaan POJO otomatis (Standard Industry)
             CodecRegistry pojoCodecRegistry = CodecRegistries.fromRegistries(
                 MongoClientSettings.getDefaultCodecRegistry(),
                 CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build())
             );
 
-            // Inisiasi koneksi ke MongoDB Localhost (Driver 5.0.0)
             mongoClient = MongoClients.create("mongodb://localhost:27017");
-            
-            // Mengembalikan database dengan registry yang sudah dikonfigurasi
-            return mongoClient.getDatabase(DATABASE_NAME).withCodecRegistry(pojoCodecRegistry);
+
+            // Simpan database dengan codec ke variable static
+            database = mongoClient.getDatabase(DATABASE_NAME)
+                                  .withCodecRegistry(pojoCodecRegistry);
         }
-        return mongoClient.getDatabase(DATABASE_NAME);
+        return database; // Selalu return yang sudah ada codec-nya
     }
 
-    public static void connect() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public static void closeConnection() {
+        if (mongoClient != null) {
+            mongoClient.close();
+            mongoClient = null;
+            database = null;
+        }
     }
 }

@@ -228,7 +228,7 @@ public class Adminpage extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void txtCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCariActionPerformed
-        showData(txtCari.getText());
+        showData(jTextField4.getText());
     }//GEN-LAST:event_txtCariActionPerformed
 
     private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
@@ -291,13 +291,15 @@ public class Adminpage extends javax.swing.JFrame {
 }
 
     private void refresAll() {
-        showData("");
-        txtUID.setText("");
-        txtKRID.setText("");
-        txtKRName.setText("");
-        txtKRDept.setSelectedIndex(0); 
-        btnUpdate.setEnabled(false); 
-        txtUID.requestFocus();
-    }
+    showData("");
+    txtUID.setText("");
+    txtKRID.setText("");
+    txtKRName.setText("");
+    txtKRDept.setSelectedIndex(0); 
+    btnUpdate.setEnabled(false); 
+    btnSave.setEnabled(true);  // ✅ tambahkan ini!
+    txtKRID.setEnabled(true);  // ✅ tambahkan ini juga, karena waktu edit tadi di-disable
+    txtUID.requestFocus();
+}
     
 }
