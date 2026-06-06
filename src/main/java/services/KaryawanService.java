@@ -22,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.bson.conversions.Bson;
+import services.EncryptionUtils;
 
 /**
  *
@@ -115,7 +116,7 @@ public class KaryawanService {
                 lblNama.setForeground(Color.WHITE);
 
                 // Membuat Label ID Karyawan & Set warna teks jadi Putih
-                JLabel lblIDK = new JLabel("ID Karyawan: " + k.getIdKaryawan());
+                JLabel lblIDK = new JLabel("ID Karyawan: " + EncryptionUtils.decrypt(k.getIdKaryawan()));
                 lblIDK.setForeground(Color.WHITE);
 
                 // Membuat Label Departemen & Set warna teks jadi Putih
