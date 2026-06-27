@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.mycompany.ftfbank;
-import gui.Adminpage;
+import gui.Dashboard;
 import services.SerialService;
 import java.awt.Frame;
 /**
@@ -13,7 +13,7 @@ import java.awt.Frame;
 public class MainApp extends javax.swing.JFrame {
     
 private static final java.util.logging.Logger logger =
-        java.util.logging.Logger.getLogger(Adminpage.class.getName());
+        java.util.logging.Logger.getLogger(Dashboard.class.getName());
     /**
      * Creates new form MainApp
      */
@@ -107,7 +107,7 @@ private static final java.util.logging.Logger logger =
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-         Adminpage admin = new Adminpage();
+         Dashboard admin = new Dashboard();
         admin.setVisible(true); 
         admin.setExtendedState(Frame.MAXIMIZED_BOTH);// TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed

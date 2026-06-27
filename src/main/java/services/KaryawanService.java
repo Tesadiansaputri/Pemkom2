@@ -4,7 +4,7 @@
  */
 package services;
 
-import gui.Adminpage;
+import gui.KaryawanPanel;
 import model.GenericDAO;
 import model.Karyawan;
 import com.mongodb.client.model.Filters;
@@ -131,13 +131,13 @@ public class KaryawanService {
                 tombolEdit.setBackground(Color.ORANGE);
                 tombolEdit.setCursor(new Cursor(Cursor.HAND_CURSOR));
                 tombolEdit.addActionListener((ActionEvent e) -> {
-                    Adminpage.txtUID.setText(k.getUidRfid());
-                    Adminpage.txtKRID.setText(k.getIdKaryawan());
-                    Adminpage.txtKRID.setEnabled(false); 
-                    Adminpage.txtKRName.setText(k.getNamaLengkap());
-                    Adminpage.txtKRDept.setSelectedItem(k.getDepartemen());
-                    Adminpage.btnUpdate.setEnabled(true);
-                    Adminpage.btnSave.setEnabled(false); 
+                    KaryawanPanel.txtUID.setText(k.getUidRfid());
+                    KaryawanPanel.txtKRID.setText(k.getIdKaryawan());
+                    KaryawanPanel.txtKRID.setEnabled(false); 
+                    KaryawanPanel.txtKRName.setText(k.getNamaLengkap());
+                    KaryawanPanel.txtKRDept.setSelectedItem(k.getDepartemen());
+                    KaryawanPanel.btnUpdate.setEnabled(true);
+                    KaryawanPanel.btnSave.setEnabled(false); 
                 });
                 JButton tombolDelete = new JButton("Delete");
                 tombolDelete.setBackground(Color.RED);
@@ -224,7 +224,7 @@ public class KaryawanService {
         Karyawan k = DAO.findOne(filter);
         if (k != null) {
             DAO.update(filter, newK);
-            Adminpage.showData("");
+            KaryawanPanel.showData("");
             JOptionPane.showMessageDialog(null, "Data berhasil diperbarui!");
         }
     }
@@ -237,7 +237,7 @@ public class KaryawanService {
     public void hapusKaryawan(String idK) {
         Bson filter = Filters.eq("idKaryawan", idK);
         DAO.delete(filter); // Menggunakan deleteOne [6]
-        Adminpage.showData("");
+        KaryawanPanel.showData("");
         JOptionPane.showMessageDialog(null, "Data karyawan berhasil dihapus.");
     }
 }

@@ -3,13 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package gui;
-import com.ituhn.pemkom2.gui.panel.Settings;
-import com.ituhn.pemkom2.objects.Karyawan;
-import com.ituhn.pemkom2.services.KaryawanService;
-import com.ituhn.pemkom2.services.LogAbsensiService;
-import com.ituhn.pemkom2.services.SerialService;
-import com.ituhn.pemkom2.util.EncryptionUtils;
-import com.ituhn.pemkom2.util.SecurityUtils;
+
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import services.DigitalClockServices;
@@ -24,11 +18,12 @@ import services.SerialService;
  * @author ADVAN
  */
 public class AttendancePage extends javax.swing.JFrame {
-    
+
     // Referensi thread disimpan untuk ditrack jika dibutuhkan (misal: untuk stop/cek status)
     private Thread clockThread;
 
     Thread delayThread;
+
     /**
      * Creates new form AttendancePage
      */
@@ -36,10 +31,10 @@ public class AttendancePage extends javax.swing.JFrame {
         initComponents();
 
         initClock(jLabel1);
-        jLabel7.setText(Settings.prefs.get("LAST_STATUS", Settings.statusAbsen));
+        jLabel6.setText(Setting.prefs.get("LAST_STATUS", Setting.statusAbsen));
 
         //inisialisasi thread delayThread
-        updateLabelWithDelay(jLabel7, "");
+        updateLabelWithDelay(jLabel6, "");
         setupAttendanceWorkflow();
     }
 
@@ -111,6 +106,8 @@ public class AttendancePage extends javax.swing.JFrame {
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel2.setText("Silahkan Tab Kartu Anda");
+
+        jTextField1.addActionListener(this::jTextField1ActionPerformed);
 
         jPanel5.setBackground(new java.awt.Color(89, 109, 135));
 
@@ -241,29 +238,22 @@ public class AttendancePage extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+        String uid = jTextField1.getText().trim();
+
+        if (!uid.isEmpty()) {
+            prosesAbsensi(uid);
+        }
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new AttendancePage().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> {
+            new AttendancePage().setVisible(true);
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -282,7 +272,7 @@ public class AttendancePage extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 
-private void initClock(JLabel lblJam) {
+    private void initClock(JLabel lblJam) {
         DigitalClockServices service = new DigitalClockServices(lblJam, "EEEE, d MMMM yyyy, HH:mm:ss");
 
         // 1. Ambil objek thread dari service
@@ -314,23 +304,39 @@ private void initClock(JLabel lblJam) {
             boolean isSuccess = (k != null);
 
             // 3. SAVE: Mencatat log absensi [6]
-            logService.simpanLog(hashedUid, Settings.prefs.get("LAST_STATUS", Settings.statusAbsen));
+            logService.simpanLog(hashedUid, Setting.prefs.get("LAST_STATUS", Setting.statusAbsen));
 
             // 4. NOTIFY: Update GUI secara aman (mencegah UI Freezing) [10]
             SwingUtilities.invokeLater(() -> {
-                if (isSuccess) {
-                    // Update Card UI dengan data dari objek Karyawan [14, 15]
-                    if (k != null) {
-                        jLabel3.setText("Nama Lengkap: " + k.getNamaLengkap() + "");
-                        jLabel4.setText("ID Karyawan: " + EncryptionUtils.decrypt(k.getIdKaryawan()));
-                        jLabel5.setText("Departemen: " + k.getDepartemen());
-                        updateLabelWithDelay(jLabel6, "Absensi diterima. Terimakasih");
-                    }
-                } else {
-                    updateLabelWithDelay(jLabel6, "Kartu Tidak Terdaftar!");
-                }
+                jTextField1.setText(dataRfid); // tampilkan UID pada textbox
+                prosesAbsensi(dataRfid);
             });
         });
+    }
+
+    private void prosesAbsensi(String uid) {
+
+        KaryawanService krService = new KaryawanService();
+        LogAbsensiService logService = new LogAbsensiService();
+
+        String hashedUid = SecurityUtils.getHash(uid, SecurityUtils.SHA_256);
+
+        model.Karyawan k = krService.findByUid(hashedUid);
+
+        // Simpan ke riwayat absensi
+        logService.simpanLog(
+                hashedUid,
+                Setting.prefs.get("LAST_STATUS", Setting.statusAbsen)
+        );
+
+        if (k != null) {
+            jLabel3.setText("Nama Lengkap : " + k.getNamaLengkap());
+            jLabel4.setText("ID Karyawan : " + EncryptionUtils.decrypt(k.getIdKaryawan()));
+            jLabel5.setText("Departemen : " + k.getDepartemen());
+            updateLabelWithDelay(jLabel6, "Absensi diterima. Terimakasih");
+        } else {
+            updateLabelWithDelay(jLabel6, "Kartu Tidak Terdaftar!");
+        }
     }
 
     private void updateLabelWithDelay(JLabel comp, String info) {
@@ -339,23 +345,22 @@ private void initClock(JLabel lblJam) {
         }
 
         delayThread = new Thread(() -> {
-            comp.setText(info); 
+            comp.setText(info);
             try {
                 for (int i = 3; i >= 1; i--) {
                     Thread.sleep(1000);
                 }
-                
-                SwingUtilities.invokeLater(() -> comp.setText(Settings.prefs.get("LAST_STATUS", Settings.statusAbsen)));
+
+                SwingUtilities.invokeLater(() -> comp.setText(Setting.prefs.get("LAST_STATUS", Setting.statusAbsen)));
 
             } catch (InterruptedException e) {
                 // Penanganan jika thread dihentikan paksa (Interrupted)
             }
         });
 
-        delayThread.setName("delayThread"); 
-        delayThread.setDaemon(true);         
+        delayThread.setName("delayThread");
+        delayThread.setDaemon(true);
         delayThread.start();
     }
+
 }
-
-

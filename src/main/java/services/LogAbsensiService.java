@@ -5,6 +5,7 @@
 package services;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import model.GenericDAO;
 import model.LogAbsensi;
@@ -14,16 +15,23 @@ import model.LogAbsensi;
  * @author ADVAN
  */
 public class LogAbsensiService {
-    private final GenericDAO<LogAbsensi> logDAO = new GenericDAO<>("log_absensi", LogAbsensi.class);
-    
+
+    private final GenericDAO<LogAbsensi> logDAO =
+            new GenericDAO<>("log_absensi", LogAbsensi.class);
+
     public void simpanLog(String hashedUid, String status) {
-        // Membuat objek LogAbsensi sesuai parameter di sumber [6]
         LogAbsensi log = new LogAbsensi(
-            UUID.randomUUID().toString(), 
-            hashedUid, 
-            LocalDateTime.now(), 
-            status
+                UUID.randomUUID().toString(),
+                hashedUid,
+                LocalDateTime.now(),
+                status
         );
-        logDAO.save(log); // Menyimpan ke MongoDB [7]
+
+        logDAO.save(log);
     }
+
+    public List<LogAbsensi> findAll() {
+        return logDAO.findAll();
+    }
+
 }
