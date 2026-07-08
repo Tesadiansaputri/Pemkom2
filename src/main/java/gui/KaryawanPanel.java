@@ -4,8 +4,14 @@
  */
 package gui;
 
+import java.awt.Component;
+import java.util.Locale;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
+import javax.swing.SwingUtilities;
 import model.Karyawan;
 import services.EncryptionUtils;
+import services.I18nService;
 import services.KaryawanService;
 import services.SecurityUtils;
 /**
@@ -20,9 +26,15 @@ public class KaryawanPanel extends javax.swing.JPanel {
      * Creates new form KaryawanPanel
      */
     public KaryawanPanel() {
+        I18nService.setLocale(Locale.of(Setting.prefs.get("LANGUAGE", Setting.statusLang))); 
+        
         initComponents();
+
         showData("");
+
+        renderLang();
     }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -52,7 +64,7 @@ public class KaryawanPanel extends javax.swing.JPanel {
 
         jPanel1.setBackground(new java.awt.Color(89, 109, 135));
 
-        jPanel2.setBackground(new java.awt.Color(255, 102, 51));
+        jPanel2.setBackground(new java.awt.Color(87, 107, 132));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -73,27 +85,27 @@ public class KaryawanPanel extends javax.swing.JPanel {
 
         txtKRDept.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Admin", "Customer Service", "Security", "Teller", "Account Officer", "Analisis Kredit", "Back Office" }));
 
-        btnSave.setText("Save");
+        btnSave.setText(I18nService.get("ui.btn.save"));
         btnSave.addActionListener(this::btnSaveActionPerformed);
 
-        btnUpdate.setText("Update");
+        btnUpdate.setText(I18nService.get("ui.btn.update"));
         btnUpdate.addActionListener(this::btnUpdateActionPerformed);
 
-        jButton3.setText("Refresh");
+        jButton3.setText(I18nService.get("ui.btn.refresh"));
         jButton3.addActionListener(this::jButton3ActionPerformed);
 
         jTextField4.addActionListener(this::jTextField4ActionPerformed);
 
-        jLabel1.setText("UID");
+        jLabel1.setText(I18nService.get("ui.emp.uid"));
 
-        jLabel3.setText("Nama Karyawan");
+        jLabel3.setText(I18nService.get("ui.emp.name"));
 
-        jLabel4.setText("Departemen");
+        jLabel4.setText(I18nService.get("ui.emp.dept"));
 
         txtCari.setText("🔍︎");
         txtCari.addActionListener(this::txtCariActionPerformed);
 
-        jLabel2.setText("ID Karyawan");
+        jLabel2.setText(I18nService.get("ui.emp.id"));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -255,8 +267,25 @@ public class KaryawanPanel extends javax.swing.JPanel {
     txtKRName.setText("");
     txtKRDept.setSelectedIndex(0); 
     btnUpdate.setEnabled(false); 
-    btnSave.setEnabled(true);  // ✅ tambahkan ini!
-    txtKRID.setEnabled(true);  // ✅ tambahkan ini juga, karena waktu edit tadi di-disable
+    btnSave.setEnabled(true);  
+    txtKRID.setEnabled(true);  
     txtUID.requestFocus();
 }
+    private void renderLang() {
+        SwingUtilities.invokeLater(() -> {
+            txtKRDept.setRenderer(new DefaultListCellRenderer() {
+                @Override
+                public Component getListCellRendererComponent(JList<?> list, Object value,
+                        int index, boolean isSelected, boolean cellHasFocus) {
+
+                    super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                    if (value instanceof String key) {
+                        setText(I18nService.get(key));
+                    }
+                    return this;
+                }
+            });
+        });
+    }
 }
