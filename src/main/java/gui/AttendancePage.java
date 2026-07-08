@@ -4,10 +4,16 @@
  */
 package gui;
 
+import static gui.Setting.prefs;
+import static gui.Setting.statusAbsen;
+import java.awt.Image;
+import java.util.Locale;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import services.DigitalClockServices;
 import services.EncryptionUtils;
+import services.I18nService;
 import services.KaryawanService;
 import services.LogAbsensiService;
 import services.SecurityUtils;
@@ -28,14 +34,32 @@ public class AttendancePage extends javax.swing.JFrame {
      * Creates new form AttendancePage
      */
     public AttendancePage() {
+       I18nService.setLocale(Locale.of(Setting.prefs.get("LANGUAGE", Setting.statusLang))); 
         initComponents();
+        ImageIcon icon = new ImageIcon(getClass().getResource("/images/logo.png"));
+        Image img = icon.getImage().getScaledInstance(
+                jLabel7.getWidth(),
+                jLabel7.getHeight(),
+                Image.SCALE_SMOOTH);
+
+        jLabel7.setIcon(new ImageIcon(img));
+        jLabel7.setText("");
 
         initClock(jLabel1);
-        jLabel6.setText(Setting.prefs.get("LAST_STATUS", Setting.statusAbsen));
+        String status = Setting.prefs.get("LAST_STATUS", "IN");
+
+        jLabel6.setText(
+                status.equals("OUT")
+                ? I18nService.get("ui.status.out")
+                : I18nService.get("ui.status.in")
+        );
 
         //inisialisasi thread delayThread
         updateLabelWithDelay(jLabel6, "");
-        setupAttendanceWorkflow();
+        
+        
+        registerHandler();
+        
     }
 
     /**
@@ -51,6 +75,7 @@ public class AttendancePage extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
@@ -60,6 +85,7 @@ public class AttendancePage extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -67,17 +93,21 @@ public class AttendancePage extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Kamis, 18-06-2026  09.12");
+        jLabel1.setText(I18nService.get("ui.date.format"));
+
+        jPanel3.setBackground(new java.awt.Color(89, 109, 135));
+
+        jLabel7.setText("jLabel7");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
+            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
+            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -101,27 +131,28 @@ public class AttendancePage extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(29, 29, 29)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(31, Short.MAX_VALUE))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel2.setText("Silahkan Tab Kartu Anda");
+        jLabel2.setText(I18nService.get("ui.welcome"));
 
+        jTextField1.setText(I18nService.get("ui.btn.simulation"));
         jTextField1.addActionListener(this::jTextField1ActionPerformed);
 
         jPanel5.setBackground(new java.awt.Color(89, 109, 135));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Nama Lengkap  :");
+        jLabel3.setText(I18nService.get("ui.label.name"));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("ID Karyawan      :");
+        jLabel4.setText(I18nService.get("ui.label.id"));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setText("Departemen      :");
+        jLabel5.setText(I18nService.get("ui.label.dept"));
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -177,16 +208,16 @@ public class AttendancePage extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(112, 112, 112)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(203, 203, 203)
                         .addComponent(jLabel2))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(225, 225, 225)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(112, 112, 112)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(121, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
@@ -203,6 +234,11 @@ public class AttendancePage extends javax.swing.JFrame {
                 .addContainerGap(29, Short.MAX_VALUE))
         );
 
+        jButton1.setBackground(new java.awt.Color(89, 109, 135));
+        jButton1.setForeground(new java.awt.Color(255, 255, 255));
+        jButton1.setText("Close");
+        jButton1.addActionListener(this::jButton1ActionPerformed);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -212,6 +248,10 @@ public class AttendancePage extends javax.swing.JFrame {
                 .addGap(167, 167, 167)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addGap(16, 16, 16))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -219,7 +259,9 @@ public class AttendancePage extends javax.swing.JFrame {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(79, 79, 79)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 112, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -247,9 +289,10 @@ public class AttendancePage extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jTextField1ActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        new Adminpage().setVisible(true); // buka AdminPage
+    this.dispose(); 
+    }//GEN-LAST:event_jButton1ActionPerformed
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(() -> {
             new AttendancePage().setVisible(true);
@@ -257,12 +300,14 @@ public class AttendancePage extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -330,13 +375,34 @@ public class AttendancePage extends javax.swing.JFrame {
         );
 
         if (k != null) {
-            jLabel3.setText("Nama Lengkap : " + k.getNamaLengkap());
-            jLabel4.setText("ID Karyawan : " + EncryptionUtils.decrypt(k.getIdKaryawan()));
-            jLabel5.setText("Departemen : " + k.getDepartemen());
-            updateLabelWithDelay(jLabel6, "Absensi diterima. Terimakasih");
+            jLabel3.setText(k.getNamaLengkap());
+            jLabel4.setText(EncryptionUtils.decrypt(k.getIdKaryawan()));
+            jLabel5.setText(k.getDepartemen());
+            updateLabelWithDelay(jLabel6, I18nService.get("ui.status.success"));
         } else {
-            updateLabelWithDelay(jLabel6, "Kartu Tidak Terdaftar!");
+            updateLabelWithDelay(jLabel6, I18nService.get("ui.status.failed"));
         }
+    }
+    private void registerHandler() {
+        KaryawanService krService = new KaryawanService();
+        LogAbsensiService logService = new LogAbsensiService();
+
+        SerialService.getInstance().addHandler(dataRfid -> {
+            String hashedUid = SecurityUtils.getHash(dataRfid, SecurityUtils.SHA_256);
+            model.Karyawan k = krService.findByUid(hashedUid);
+           
+            SwingUtilities.invokeLater(() -> {
+                if (k != null) {
+                    logService.simpanLog(hashedUid, Setting.prefs.get("LAST_STATUS", Setting.statusAbsen));
+                        jLabel3.setText(I18nService.get("ui.label.name")+": " + k.getNamaLengkap() + "");
+                        jLabel4.setText(I18nService.get("ui.label.id")+": " + EncryptionUtils.decrypt(k.getIdKaryawan()));
+                        jLabel5.setText(I18nService.get("ui.label.dept")+": " + k.getDepartemen());
+                        updateLabelWithDelay(jLabel6, I18nService.get("ui.status.success"));
+                } else {
+                    updateLabelWithDelay(jLabel6, I18nService.get("ui.status.failed"));
+                }
+            });
+        });
     }
 
     private void updateLabelWithDelay(JLabel comp, String info) {
@@ -351,7 +417,15 @@ public class AttendancePage extends javax.swing.JFrame {
                     Thread.sleep(1000);
                 }
 
-                SwingUtilities.invokeLater(() -> comp.setText(Setting.prefs.get("LAST_STATUS", Setting.statusAbsen)));
+                SwingUtilities.invokeLater(() -> {
+                    String status = Setting.prefs.get("LAST_STATUS", "IN");
+
+                    comp.setText(
+                            status.equals("OUT")
+                            ? I18nService.get("ui.status.out")
+                            : I18nService.get("ui.status.in")
+                    );
+                });
 
             } catch (InterruptedException e) {
                 // Penanganan jika thread dihentikan paksa (Interrupted)

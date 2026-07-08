@@ -11,6 +11,8 @@ import services.LogAbsensiService;
 import model.Karyawan;
 import services.KaryawanService;
 import services.EncryptionUtils;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
@@ -41,7 +43,7 @@ public class LogAbsensiPanel extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblLogAbsensi = new javax.swing.JTable();
 
-        setBackground(new java.awt.Color(87, 107, 131));
+        setBackground(new java.awt.Color(87, 107, 132));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
@@ -130,15 +132,24 @@ public class LogAbsensiPanel extends javax.swing.JPanel {
                 = (DefaultTableModel) tblLogAbsensi.getModel();
 
         model.setRowCount(0);
-
+        
+        DateTimeFormatter formatter =
+            DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         LogAbsensiService logService = new LogAbsensiService();
         KaryawanService karyawanService = new KaryawanService();
 
         List<LogAbsensi> logs = logService.findAll();
 
+        LocalDate hariIni = LocalDate.now();
+
         int no = 1;
 
         for (LogAbsensi log : logs) {
+
+            // Filter hanya data hari ini
+            if (!log.getWaktuTap().toLocalDate().equals(hariIni)) {
+                continue;
+            }
 
             Karyawan k = karyawanService.findByUid(log.getUidRfid());
 
@@ -150,12 +161,12 @@ public class LogAbsensiPanel extends javax.swing.JPanel {
                     k.getNamaLengkap(),
                     k.getDepartemen(),
                     log.getStatus(),
-                    log.getWaktuTap()
+                    log.getWaktuTap().format(formatter)
                 });
 
             }
-
         }
     }
-
 }
+
+    

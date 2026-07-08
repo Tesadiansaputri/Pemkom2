@@ -4,24 +4,39 @@
  */
 package gui;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.util.Locale;
 import java.util.prefs.Preferences;
+import javax.swing.BorderFactory;
+import javax.swing.SwingUtilities;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
+import services.I18nService;
 
 /**
  *
  * @author ADVAN
  */
-public class Setting extends javax.swing.JPanel {
+public class Setting extends javax.swing.JPanel implements I18nService.I18nChangeListener{
     public static String statusAbsen;
+    public static String statusLang;
     public static Preferences prefs = Preferences.userNodeForPackage(Setting.class);
 
     /**
      * Creates new form Settings
      */
     public Setting() {
+        I18nService.setLocale(Locale.of(Setting.prefs.get("LANGUAGE", Setting.statusLang))); 
         initComponents();
         
-        statusAbsen = prefs.get("LAST_STATUS", "Masuk");
-        slidingStatusToggle1.setStatusByString(statusAbsen); 
+        String status = prefs.get("LAST_STATUS", "IN");
+        slidingStatusToggle1.setSelected(status.equals("OUT")); 
+
+        statusLang = prefs.get("LANGUAGE", "id"); 
+        slidingLanguageToggle1.setSelectedLanguageIndexByString(statusLang);     
+        
+        I18nService.registerListener(Setting.this); 
     }
 
     /**
@@ -40,6 +55,8 @@ public class Setting extends javax.swing.JPanel {
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         slidingStatusToggle1 = new Palette.SlidingStatusToggle();
+        jPanel7 = new javax.swing.JPanel();
+        slidingLanguageToggle1 = new Palette.SlidingLanguageToggle();
         jPanel4 = new javax.swing.JPanel();
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -103,28 +120,53 @@ public class Setting extends javax.swing.JPanel {
                 .addContainerGap(63, Short.MAX_VALUE))
         );
 
+        jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Language", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14))); // NOI18N
+
+        slidingLanguageToggle1.setText("slidingLanguageToggle1");
+        slidingLanguageToggle1.addActionListener(this::slidingLanguageToggle1ActionPerformed);
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                .addContainerGap(116, Short.MAX_VALUE)
+                .addComponent(slidingLanguageToggle1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(99, 99, 99))
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGap(85, 85, 85)
+                .addComponent(slidingLanguageToggle1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(42, Short.MAX_VALUE)
+                .addGap(62, 62, 62)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(53, 53, 53)
+                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(151, 151, 151))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(106, 106, 106)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(37, 37, 37)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(33, Short.MAX_VALUE))
+                .addGap(106, 106, 106)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(36, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(34, 34, 34))
         );
 
         jTabbedPane1.addTab("General", jPanel1);
@@ -133,7 +175,7 @@ public class Setting extends javax.swing.JPanel {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 727, Short.MAX_VALUE)
+            .addGap(0, 1209, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -157,15 +199,19 @@ public class Setting extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void slidingStatusToggle1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_slidingStatusToggle1ActionPerformed
-        if (slidingStatusToggle1.isSelected()) {
-            statusAbsen = "Pulang";
-    } else {
-            statusAbsen = "Masuk";
-    }
+        prefs.put("LAST_STATUS", slidingStatusToggle1.isSelected() ? "OUT" : "IN");
 
-    prefs.put("LAST_STATUS", statusAbsen);
-    
     }//GEN-LAST:event_slidingStatusToggle1ActionPerformed
+
+    private void slidingLanguageToggle1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_slidingLanguageToggle1ActionPerformed
+        statusLang = slidingLanguageToggle1.getSelectedLanguageString();
+        prefs.put("LANGUAGE", statusLang);
+        I18nService.setLocale(Locale.of(statusLang));
+        java.awt.Window window = SwingUtilities.getWindowAncestor(this);
+if (window instanceof Adminpage admin) {
+    admin.onLanguageChanged();
+}
+    }//GEN-LAST:event_slidingLanguageToggle1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -175,7 +221,34 @@ public class Setting extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private Palette.SlidingLanguageToggle slidingLanguageToggle1;
     private Palette.SlidingStatusToggle slidingStatusToggle1;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void onLanguageChanged() {
+        SwingUtilities.invokeLater(() -> {            
+       
+            this.revalidate();
+            this.repaint();
+            
+            jPanel5.setBorder(BorderFactory.createTitledBorder(
+    new LineBorder(Color.BLACK, 1, true),
+    I18nService.get("ui.setting.status"),
+    TitledBorder.CENTER,
+    TitledBorder.DEFAULT_POSITION,
+    new Font("Segoe UI", Font.BOLD, 14)
+));
+
+jPanel7.setBorder(BorderFactory.createTitledBorder(
+    new LineBorder(Color.BLACK, 1, true),
+    I18nService.get("ui.setting.lang"),
+    TitledBorder.CENTER,
+    TitledBorder.DEFAULT_POSITION,
+    new Font("Segoe UI", Font.BOLD, 14)
+));
+        });
+    }
 }

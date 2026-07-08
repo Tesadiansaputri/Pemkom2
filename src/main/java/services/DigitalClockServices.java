@@ -4,6 +4,7 @@
  */
 package services;
 
+import gui.Setting;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -34,7 +35,7 @@ public class DigitalClockServices {
      */
     public Thread getThread() {
         Runnable clockTask = () -> {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern, Locale.of("id", "ID"));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern, Locale.of(Setting.prefs.get("LANGUAGE", Setting.statusLang)));
             try {
                 while (!Thread.currentThread().isInterrupted()) {
                     LocalDateTime now = LocalDateTime.now();

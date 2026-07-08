@@ -90,7 +90,7 @@ public class KaryawanService {
         // Mengubah layout panel target menjadi BorderLayout
         panelTarget.setLayout(new BorderLayout());
         // Mengatur warna background utama menjadi biru
-        panelTarget.setBackground(new Color(68, 114, 196));
+        panelTarget.setBackground(Color.WHITE);
 
         // Membuat panel grid khusus untuk menampung kotak/card
         JPanel gridPanel = new JPanel(new GridLayout(0, 3, 10, 10));
@@ -103,7 +103,7 @@ public class KaryawanService {
                 // Membuat panel 'Card' (box orange) untuk 1 karyawan
                 // Layout 4 baris 1 kolom agar kolor berisi Nama,ID, Departemen, panel control 
                 JPanel cardPanel = new JPanel(new GridLayout(4, 1, 0, 0));
-                cardPanel.setBackground(new Color(237, 125, 49)); // Warna background orange
+                cardPanel.setBackground(new Color(87,107,132)); // Warna background orange
 
                 // Memberikan garis tepi tipis membulat (rounded) dan padding/jarak ke dalam
                 cardPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -112,22 +112,22 @@ public class KaryawanService {
                 ));
 
                 // Membuat Label Nama & Set warna teks jadi Putih
-                JLabel lblNama = new JLabel("Nama: " + k.getNamaLengkap());
+                JLabel lblNama = new JLabel(I18nService.get("ui.emp.name")+": " + k.getNamaLengkap());
                 lblNama.setForeground(Color.WHITE);
 
                 // Membuat Label ID Karyawan & Set warna teks jadi Putih
-                JLabel lblIDK = new JLabel("ID Karyawan: " + EncryptionUtils.decrypt(k.getIdKaryawan()));
+                JLabel lblIDK = new JLabel(I18nService.get("ui.emp.id")+": " + EncryptionUtils.decrypt(k.getIdKaryawan())); 
                 lblIDK.setForeground(Color.WHITE);
 
                 // Membuat Label Departemen & Set warna teks jadi Putih
-                JLabel lblDept = new JLabel("Departmen: " + k.getDepartemen());
+                JLabel lblDept = new JLabel(I18nService.get("ui.emp.dept")+": " + k.getDepartemen());
                 lblDept.setForeground(Color.WHITE);
 
                 // Membuat panel kontrol 1 baris 2 kolom, berisi tombol edit dan hapus
                 JPanel controlPanel = new JPanel(new GridLayout(1, 2, 20, 15));
-                controlPanel.setBackground(new Color(237, 125, 49));
+                controlPanel.setBackground(new Color(87,107,132));
 
-                JButton tombolEdit = new JButton("Edit");
+                JButton tombolEdit = new JButton(I18nService.get("ui.btn.update"));
                 tombolEdit.setBackground(Color.ORANGE);
                 tombolEdit.setCursor(new Cursor(Cursor.HAND_CURSOR));
                 tombolEdit.addActionListener((ActionEvent e) -> {
@@ -139,7 +139,7 @@ public class KaryawanService {
                     KaryawanPanel.btnUpdate.setEnabled(true);
                     KaryawanPanel.btnSave.setEnabled(false); 
                 });
-                JButton tombolDelete = new JButton("Delete");
+                JButton tombolDelete = new JButton(I18nService.get("ui.btn.delete"));
                 tombolDelete.setBackground(Color.RED);
                 tombolDelete.setForeground(Color.WHITE);
                 tombolDelete.setCursor(new Cursor(Cursor.HAND_CURSOR));

@@ -135,6 +135,10 @@ public class SidebarMainMenu extends JPanel {
                     case "KiosK":
                         showPage(new AttendancePage());
                         break;
+                        
+                    case "Riwayat":
+                        showPage(new RiwayatAbsensi());
+                        break;
 
                     case "Products":
                         showPage(null);
